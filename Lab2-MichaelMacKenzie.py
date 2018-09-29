@@ -79,4 +79,5 @@ dualmaxsegments(test_array2)
 
 ########################################################################################################################
 # Part 3: This finds the 2 max non-overlapping sub-arrays (if time permits)
+# efesffsjefensfjlnsjlfnlsjn
 
