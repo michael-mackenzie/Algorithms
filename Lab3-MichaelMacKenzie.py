@@ -1,7 +1,6 @@
 ########################################################################################################################
 # Code Written By: Michael MacKenzie, Date: 10/2/2018
 
-
 ########################################################################################################################
 # Question 1 & Question 2
 
@@ -14,14 +13,12 @@ convexHull = []
 
 
 # Generates n random points uniformly around the origin.
-def uniformpoints(n):
+def uniformpoints(n, s):
     a = [0] * n
     for i in range(n):
         a[i] = [0] * 2
-        a[i][0] = random.uniform(-5, 5)
+        a[i][0] = random.uniform(-5+s, 5+s)
         a[i][1] = random.uniform(-5, 5)
-    for j in range(len(a)):
-        plt.scatter(a[j][0], a[j][1], color='b')
     return a
 
 
@@ -32,8 +29,6 @@ def gaussianpoints(n):
         a[i] = [0] * 2
         a[i][0] = random.gauss(0, 2.5)
         a[i][1] = random.gauss(0, 2.5)
-    for j in range(len(a)):
-        plt.scatter(a[j][0], a[j][1], color='b')
     return a
 
 
@@ -98,9 +93,8 @@ def subhull(a, P, Q):
     subhull(s2, C, Q)
 
 
-# Given a set of points (convex), this function sorts these points in order of polar angle, then using a shoestring
-# style algorithm determines the area of the n-gon.
-def hullarea(hullpoints):
+# Given a set of unsorted points, this functions sorts them in terms of their polar coordinate and returns the new list
+def sortpolar(hullpoints):
     comx = 0
     comy = 0
     sortedhull = []
@@ -116,53 +110,177 @@ def hullarea(hullpoints):
         sortedhull.append((x, y, an))
     sortedhull.sort(key = lambda tup: tup[2])
     newsortedhull = numpy.array(sortedhull)[:, 0:2]
-    area = 0.0
-    for i in range(len(newsortedhull)):
-        j = (i + 1) % (len(newsortedhull))
-        area += newsortedhull[i][0] * newsortedhull[j][1]
-        area -= newsortedhull[j][0] * newsortedhull[i][1]
-    area = abs(area) / 2.0
+    return newsortedhull
+
+
+# Given a set of polarly-sorted points, this function draws the convex hull
+def drawhull(hullpoints):
+    newsortedhull = sortpolar(hullpoints)
     for i in range(1, len(newsortedhull)):
         plt.plot([newsortedhull[i-1][0], newsortedhull[i][0]], [newsortedhull[i-1][1], newsortedhull[i][1]], 'k-')
     plt.plot([newsortedhull[len(newsortedhull)-1][0], newsortedhull[0][0]], [newsortedhull[len(newsortedhull)-1][1],
                                                                              newsortedhull[0][1]], 'k-')
-    return area
 
 
-# This is a set of running code. ###################################################
-points = uniformpoints(50)
-print(points)
-quickhull(points)
-numconvexHull = numpy.array(convexHull)
-print("Points in convex hull: ")
-print(numconvexHull)
-for k in range(len(numconvexHull)):  # This plots the convex hull points in a new colour and links them together.
-    plt.scatter(numconvexHull[k][0], numconvexHull[k][1], color='r')
-totalhullarea = hullarea(numconvexHull)
-print("The area of the hull is: ", totalhullarea)
+# This is a set of running code for Q1. ###########################################
+
+points = uniformpoints(50, 0)  # Generate points
+quickhull(points)  # Find convex hull of points
+print("Q1 - Points in convex hull: ")
+print(numpy.array(convexHull))
+for i in range(len(points)):
+    plt.scatter(points[i][0], points[i][1], color="b", label='data')
+for k in range(len(convexHull)):  # This plots the convex hull points in a new colour and links them together.
+    plt.scatter(convexHull[k][0], convexHull[k][1], color='r', label='hull')
+drawhull(convexHull)
+plt.title("Q1: Demonstration of Uniform Points QuickHull")
 plt.show()
-# End running code ##################################################################
 
-
-# TEST SPOT #########################################################################
-convexHull = []
-for i in range(10, 111, 20):
-    print(i)
-    points = uniformpoints(i)
+# TEST SPOT: Average Ratio of Uniform #
+s = 0
+avgr1 = 0
+for i in range(10, 211, 20):
+    convexHull = []
+    s += 1
+    points = uniformpoints(i, 0)
     quickhull(points)
-    numconvexHull = numpy.array(convexHull)
-    totalhullarea = hullarea(numconvexHull)
-    ratio = totalhullarea/i
-    print("ratio is: ", ratio)
+    ratio1 = len(convexHull)/i
+    avgr1 += ratio1
+avgr1 = avgr1/s
+print("Q1 (Uniform) Average ratio is: ", avgr1)
+
+# End running code ################################################################
 
 
-# TEST SPOT #########################################################################
+# This is a set of running code for Q2. ###########################################
+
 convexHull = []
-for i in range(10, 111, 20):
-    print(i)
-    points = gaussianpoints(i)
+points = gaussianpoints(50)  # Generate points
+quickhull(points)  # Find convex hull of points
+print("Q2 - Points in convex hull: ")
+print(numpy.array(convexHull))
+for i in range(len(points)):
+    plt.scatter(points[i][0], points[i][1], color="b", label='data')
+for k in range(len(convexHull)):  # This plots the convex hull points in a new colour and links them together.
+    plt.scatter(convexHull[k][0], convexHull[k][1], color='r', label='hull')
+drawhull(convexHull)
+plt.title("Q2: Demonstration of Gaussian Points QuickHull")
+plt.show()
+
+# TEST SPOT: Average Ratio of Gaussian #
+t = 0
+avgr2 = 0
+for j in range(10, 211, 20):
+    convexHull = []
+    t += 1
+    points = gaussianpoints(j)
     quickhull(points)
-    numconvexHull = numpy.array(convexHull)
-    totalhullarea = hullarea(numconvexHull)
-    ratio = totalhullarea/i
-    print("ratio is: ", ratio)
+    ratio2 = len(convexHull)/j
+    avgr2 += ratio2
+avgr2 = avgr1/s
+print("Q2 (Gaussian) Average ratio is: ", avgr2)
+
+# End running code ################################################################
+
+
+########################################################################################################################
+# Question 3: Testing to see if two hulls intersect based on the bounding circle method.
+
+def distance(p1, p2):
+    return math.sqrt((p2[0]-p1[0])**2 + (p2[1]-p1[1])**2)
+
+def doesintersect(com1, com2 , r1, r2):
+    if r1 + r2 > distance(com1, com2):
+        return 1
+    else:
+        return 0
+
+def doeshullintersect(set1, set2):
+    global convexHull
+    convexHull = []
+    quickhull(set1)
+    set1hull = convexHull
+    convexHull = []
+    quickhull(set2)
+    set2hull = convexHull
+    comx1 = 0
+    comy1 = 0
+    comx2 = 0
+    comy2 = 0
+    for i in range(len(set1)):
+        comx1 += set1[i][0]
+    comx1 = comx1/len(set1)
+    for i in range(len(set1)):
+        comy1 += set1[i][1]
+    comy1 = comy1/len(set1)
+    for i in range(len(set2)):
+        comx2 += set2[i][0]
+    comx2 = comx2/len(set2)
+    for i in range(len(set2)):
+        comy2 += set2[i][1]
+    comy2 = comy2/len(set2)
+    com1 = [comx1, comy1]
+    com2 = [comx2, comy2]
+    r1 = 0
+    for i in range(len(set1hull)):
+        if set1hull[i][0] == 0:
+            r1 = r1
+        else:
+            if distance(com1, set1hull[i]) > r1:
+                r1 = distance(com1, set1hull[i])
+    r2 = 0
+    for j in range(len(set2hull)):
+        if set2hull[j][0] == 0:
+            r2 = r2
+        else:
+            if distance(com2, set2hull[j]) > r2:
+                r2 = distance(com2, set2hull[j])
+    c1 = plt.Circle((com1[0], com1[1]), radius=r1, color='b', fill=False)
+    c2 = plt.Circle((com2[0], com2[1]), radius=r2, color='r', fill=False)
+    fig, ax = plt.subplots()
+    for j in range(len(set1)):
+        plt.scatter(set1[j][0], set1[j][1], color='b')
+    for j in range(len(set2)):
+        plt.scatter(set2[j][0], set2[j][1], color='r')
+    ax.add_patch(c1)
+    ax.add_patch(c2)
+    plt.axis('scaled')
+    plt.title("Q3: Do The Bounding Circles Intersect?")
+    plt.show()
+    yn = doesintersect(com1, com2, r1, r2)
+    if yn == 1:
+        print("Q3. Do Hull Approximations Intersect: Yes")
+    else:
+        print("Q3. Do Hull Approximations Intersect: No")
+    return
+
+
+# Test the code ###########################
+set1 = uniformpoints(10, 6)
+set2 = uniformpoints(10, -6)
+doeshullintersect(set1, set2)
+###########################################
+
+
+########################################################################################################################
+# Question 4: Pseudo Code Testing to see if two hulls absolutely overlap or not.
+
+"""
+def properHullIntersect(hull_one, hull_two):
+    draw line between polygons to determine orientation
+    left_object = hull_one
+    right_object = hull_two
+
+    for (left_object)
+        if(left_object(segment_i) does not intersect right_object and is on the right side of left_object)
+            add line to separating_list
+            
+    for (right_object)
+        if(right_object(segment_i) does not intersect left_object and is on the left side of right_object)
+            add line to separating_list
+
+    if (separating_list is empty):
+        return (the hulls do intersect)
+    else:
+        return (the hulls don't intersect)
+"""
