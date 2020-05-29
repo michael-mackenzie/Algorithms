@@ -4,7 +4,7 @@ A small collection of the labs from my algorithms course written in Python!
 
 ## Lab 1
 
-Lab 1 is an investigation into the Collatz conjecture, a notorious unsolved problem in mathematics.  Start with an positive integer n, the next term is generated as follows: if the previous term is even, the next term is one half the previous term.  If it was odd, the next term is 3 times the previous term plus 1.  The question is this: does the Collatz sequence eventually reach 1 for all positive inter initial values?
+Lab 1 is an investigation into the Collatz conjecture, a notorious unsolved problem in mathematics.  Start with a positive integer n, the next term is generated as follows: if the previous term is even, the next term is one half the previous term.  If it was odd, the next term is 3 times the previous term plus 1.  The question is this: does the Collatz sequence eventually reach 1 for all positive interger initial values?
 
 ## Lab 2
 
